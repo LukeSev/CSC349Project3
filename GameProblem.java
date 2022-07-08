@@ -8,7 +8,7 @@ public class GameProblem {
         // Get file name from user
         System.out.println("Enter the name of the file with Game Data:");
         Scanner in = new Scanner(System.in);
-        String filename = in.nextLine();
+        String filename = System.getProperty("user.dir") + "/" + in.nextLine();
         File infile = new File(filename);
 
         // Generate matrices from info in file
@@ -29,6 +29,8 @@ public class GameProblem {
                 A[i][j] = filescan.nextInt();
             }
         }
+
+        game(rows, columns, A);
     }
 
     public static void game(int n, int m, int[][] A)
@@ -36,46 +38,103 @@ public class GameProblem {
         int[][] S = new int[n][m];
         char[][] R = new char[n][m];
 
-        S[n][m] = A[n][m];
+        S[n-1][m-1] = A[n-1][m-1];
+        int[] maxloc = new int[2];
+        maxloc[0] = n-1;
+        maxloc[1] = m-1;
+        int max = A[n-1][m-1];
 
         // Right column
-        for(int i = n-1; i > 0; i--)
+        for(int i = n-2; i >= 0; i--)
         {
-            if(A[i][m] < A[i+1][m])
+            if(A[i+1][m-1] > 0)
             {
-                S[i][m] = A[i][m] + A[i+1][m];
-                R[i][m] = 'd';
+                S[i][m-1] = A[i][m-1] + A[i+1][m-1];
+                R[i][m-1] = 'd';
+            }
+            else
+            {
+                S[i][m-1] = A[i][m-1];
+                R[i][m-1] = 'r';
+            }
+            if(S[i][m-1] >= max)
+            {
+                max = S[i][m-1];
+                maxloc[0] = i;
+                maxloc[1] = m-1;
             }
         }
 
         // Bottom row
-        for(int j = m-1; m > 0; m--)
+        for(int j = m-2; j >= 0; j--)
         {
-            if(A[n][j] < A[n][j+1])
+            if(A[n-1][j+1] > 0)
             {
-                S[n][j] = A[n][j] + A[n][j+1];
-                R[n][j] = 'r';
+                S[n-1][j] = A[n-1][j] + A[n-1][j+1];
+                R[n-1][j] = 'r';
+
+            }
+            else
+            {
+                S[n-1][j] = A[n-1][j];
+                R[n-1][j] = 'd';
+            }
+            if(S[n-1][j] >= max)
+            {
+                max = S[n-1][j];
+                maxloc[0] = j;
+                maxloc[1] = n-1;
             }
         }
 
         // Everything else
-        for(int i = n - 1; i > 0; i--)
+        for(int i = n-2; i >= 0; i--)
         {
-            for(int j = m-1; j > 0; j--)
+            for(int j = m-2; j >= 0; j--)
             {
                 if(S[i+1][j] > S[i][j+1])
                 {
                     S[i][j] = A[i][j] + S[i+1][j];
                     R[i][j] = 'd';
+
                 }
                 else
                 {
                     S[i][j] = A[i][j] + S[i][j+1];
                     R[i][j] = 'r';
                 }
+                if(S[i][j] >= max)
+                {
+                    max = S[i][j];
+                    maxloc[0] = i;
+                    maxloc[1] = j;
+                }
             }
         }
 
+        printResult(R, max, maxloc, n, m);
     }
 
+    private static void printResult(char[][] R, int maxScore, int[] location, int n, int m)
+    {
+        System.out.printf("Best score: %d%n", maxScore);
+        System.out.printf("Best route: ");
+
+        int flag = 0;
+        while(flag == 0)
+        {
+            System.out.printf("[%d,%d] to ", location[0]+1, location[1]+1);
+            if(R[location[0]][location[1]] == 'r')
+                if(location[1] == m-1)
+                    flag = 1;
+                else
+                    location[1]++;
+            else
+                if(location[0] == n-1)
+                    flag = 1;
+                else
+                    location[0]++;
+        }
+        System.out.printf("exit%n");
+    }
 }
