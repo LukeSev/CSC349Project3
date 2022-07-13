@@ -47,9 +47,9 @@ public class GameProblem {
         // Right column
         for(int i = n-2; i >= 0; i--)
         {
-            if(A[i+1][m-1] > 0)
+            if(S[i+1][m-1] > 0)
             {
-                S[i][m-1] = A[i][m-1] + A[i+1][m-1];
+                S[i][m-1] = A[i][m-1] + S[i+1][m-1];
                 R[i][m-1] = 'd';
             }
             else
@@ -68,9 +68,9 @@ public class GameProblem {
         // Bottom row
         for(int j = m-2; j >= 0; j--)
         {
-            if(A[n-1][j+1] > 0)
+            if(S[n-1][j+1] > 0)
             {
-                S[n-1][j] = A[n-1][j] + A[n-1][j+1];
+                S[n-1][j] = A[n-1][j] + S[n-1][j+1];
                 R[n-1][j] = 'r';
 
             }
@@ -82,8 +82,8 @@ public class GameProblem {
             if(S[n-1][j] >= max)
             {
                 max = S[n-1][j];
-                maxloc[0] = j;
-                maxloc[1] = n-1;
+                maxloc[0] = n-1;
+                maxloc[1] = j;
             }
         }
 
@@ -111,7 +111,6 @@ public class GameProblem {
                 }
             }
         }
-
         printResult(R, max, maxloc, n, m);
     }
 
